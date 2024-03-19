@@ -11,6 +11,7 @@ import React from "react";
 import { StyleProp } from "react-native";
 import { forwardRef } from "react";
 import { useTheme } from "@react-navigation/native";
+import useColors from "../core/theme/useColors";
 const Button = forwardRef<
   View,
   {
@@ -22,7 +23,7 @@ const Button = forwardRef<
     secondary?: boolean;
   }
 >((props, ref) => {
-  const { colors } = useTheme();
+  const colors = useColors();
 
   const styles = StyleSheet.create({
     wrapper: {

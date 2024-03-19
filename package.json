@@ -68,7 +68,8 @@
     "redaxios": "^0.5.1",
     "redux": "^5.0.1",
     "scorecard-types": "github:scorecardto/types",
-    "expo-background-fetch": "~11.3.0"
+    "expo-background-fetch": "~11.3.0",
+    "expo-clipboard": "~4.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

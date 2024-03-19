@@ -7,7 +7,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../core/state/store";
 import useColors from "../../core/theme/useColors";
 import useAccents from "../../core/theme/useAccents";
-import {ChangeTable, ChangeTableEntry} from "../../../lib/types/ChangeTableEntry";
+import {
+  ChangeTable,
+  ChangeTableEntry,
+} from "../../../lib/types/ChangeTableEntry";
 
 export default function GradeStateChangesCard(props: {
   course: Course;
@@ -90,14 +93,22 @@ export default function GradeStateChangesCard(props: {
             </View>
           </TouchableOpacity>
         </View>
-        {[props.gradeChangeTable.newGrades, props.gradeChangeTable.removedGrades].flat(2).map((g: ChangeTableEntry, idx) => (
-          <TableRow
-            key={idx}
-            name={g.assignmentName}
-            grade={g.primaryData}
-            worth={g.secondaryData}
-          />
-        ))}
+        {[
+          props.gradeChangeTable.newGrades,
+          props.gradeChangeTable.removedGrades,
+        ]
+          .flat(2)
+          .map((g: ChangeTableEntry, idx) => {
+            if (g == null) return <></>;
+            return (
+              <TableRow
+                key={idx}
+                name={g.assignmentName}
+                grade={g.primaryData}
+                worth={g.secondaryData}
+              />
+            );
+          })}
       </ScrollView>
     </View>
   );
