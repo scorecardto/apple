@@ -15,7 +15,21 @@ function parseVersion(version: string) {
 }
 
 async function getReleaseNotes(version: string) {
-    return (await firestore().collection("releaseNotes").doc(version).get()).data()?.display.replaceAll("\\n", "\n");
+    const data = (await firestore().collection("releaseNotes").doc(version).get()).data()?.data;
+    if (!data) return;
+
+    let out = "";
+    for (const section of data) {
+        out += section.title + "\n";
+        if (section.text) out += section.text + "\n";
+        if (section.items) {
+            out += section.items.map((i: string) => "   - "+i).join("\n");
+            out += "\n"
+        }
+        out += "\n";
+    }
+
+    return out;
 }
 
 export default function UpdateChecker() {
