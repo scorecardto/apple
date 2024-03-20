@@ -1,6 +1,8 @@
 import Storage from "expo-storage";
 import * as Crypto from "expo-crypto";
 import * as Device from "expo-device";
+import {DeviceType} from "expo-device";
+import * as Application from "expo-application";
 
 export async function getDeviceId() {
     const deviceId = await Storage.getItem({ key: "deviceId" });
@@ -16,5 +18,5 @@ export async function getDeviceId() {
 }
 
 export function getDeviceDescriptor() {
-    return `${Device.brand} ${Device.modelName} [${Device.deviceType}] (${Device.osName} ${Device.osVersion} - ${Device.osInternalBuildId})`;
+    return `${Device.brand} ${Device.modelName} [${DeviceType[Device.deviceType ?? 0]}] (${Device.osName} ${Device.osVersion} - ${Device.osInternalBuildId}) | v${Application.nativeApplicationVersion}`;
 }
