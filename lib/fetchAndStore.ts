@@ -46,6 +46,8 @@ export default async function fetchAndStore(
         c.gradeCategories!.every((gc) => (gc.assignments?.length ?? 0) === 0)
       ) {
         for (let i = 0; i < oldData.length; i++) {
+          if (oldData[i].gradeCategory != gradeCategory) break;
+
           const oldCourse = oldData[i].courses.find((oc) => oc.key === c.key);
           if (oldCourse) return oldCourse;
         }
