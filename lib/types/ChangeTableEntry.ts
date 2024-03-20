@@ -6,8 +6,8 @@ export type ChangeTableEntry = {
 
 export type ChangeTable = {
     changed: boolean;
-    oldAverage: string;
-    newAverage: string;
-    newGrades: ChangeTableEntry[];
-    removedGrades: ChangeTableEntry[][];
+    oldAverage?: string;
+    newAverage?: string;
+    newGrades?: ChangeTableEntry[];
+    removedGrades?: ChangeTableEntry[][];
 }

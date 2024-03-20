@@ -18,6 +18,7 @@ import { registerNotifs } from "../../../lib/backgroundNotifications";
 
 export default function CourseEditSheet(props: {
   courseKey: string;
+  gradeText: string;
   defaultName: string;
   setOnClose: (onClose: () => void) => void;
 }) {

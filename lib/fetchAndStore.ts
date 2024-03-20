@@ -1,5 +1,9 @@
 import Storage from "expo-storage";
-import {AllContentResponse, Assignment, GradebookRecord} from "scorecard-types";
+import {
+  AllContentResponse,
+  Assignment,
+  GradebookRecord,
+} from "scorecard-types";
 import CourseStateRecord from "./types/CourseStateRecord";
 import captureCourseState from "./captureCourseState";
 import { AppDispatch } from "../components/core/state/store";
@@ -8,9 +12,10 @@ import {
   setSessionId,
 } from "../components/core/state/user/loginSlice";
 import { setGradeRecord } from "../components/core/state/grades/gradeDataSlice";
-import { setOldCourseStates } from "../components/core/state/grades/oldCourseStatesSlice";
+import {setOldCourseState, setOldCourseStates} from "../components/core/state/grades/oldCourseStatesSlice";
 import { setGradeCategory } from "../components/core/state/grades/gradeCategorySlice";
-import {updateNotifs} from "./backgroundNotifications";
+import { updateNotifs } from "./backgroundNotifications";
+import { useEffect } from "react";
 
 export default async function fetchAndStore(
   data: AllContentResponse,
@@ -29,11 +34,19 @@ export default async function fetchAndStore(
     (await Storage.getItem({ key: "records" })) ?? "[]"
   );
 
+  if (gradeCategory !== oldData[0].gradeCategory) {
+    dispatch(setOldCourseStates({}))
+    dispatch(setOldCourseState({save: "STORAGE"}))
+  }
+
   const newData: GradebookRecord = {
-    courses: data.courses.map(c => {
-      if ((c.gradeCategories?.length ?? 0) === 0 || c.gradeCategories!.every(gc=>(gc.assignments?.length ?? 0) === 0)) {
+    courses: data.courses.map((c) => {
+      if (
+        (c.gradeCategories?.length ?? 0) === 0 ||
+        c.gradeCategories!.every((gc) => (gc.assignments?.length ?? 0) === 0)
+      ) {
         for (let i = 0; i < oldData.length; i++) {
-          const oldCourse = oldData[0].courses.find(oc => oc.key === c.key);
+          const oldCourse = oldData[i].courses.find((oc) => oc.key === c.key);
           if (oldCourse) return oldCourse;
         }
       }
@@ -63,30 +76,44 @@ export default async function fetchAndStore(
     });
   }
 
-  const assignmentHasGrade = (a: Assignment | undefined) => a?.grade && a.grade !== '' && /[^a-z]/i.test(a.grade);
-  let hasNewData = false;
+  const assignmentHasGrade = (a: Assignment | undefined) =>
+    a?.grade && a.grade !== "" && /[^a-z]/i.test(a.grade);
+  let hasNewData = new Set<string>();
   if (oldData[0]) {
     // courseLoop:
     for (const course of newData.courses) {
-      const oldCourse = oldData[0].courses.find(c=>c.key === course.key);
+      const oldCourse = oldData[0].courses.find((c) => c.key === course.key);
       if (!oldCourse) continue;
 
-      hasNewData = hasNewData || course.grades[course.grades.length-1]?.value !== oldCourse.grades[oldCourse.grades.length-1]?.value;
+      if (
+        course.grades[gradeCategory]?.value !==
+        oldCourse.grades[gradeCategory]?.value
+      ) {
+        hasNewData.add(course.key);
+      }
 
       let notModifiedAssignmentsExist = false;
       const modifiedAssignments = [];
       for (const category of course.gradeCategories!) {
-        const oldCategory = oldCourse.gradeCategories!.find(c=>c.name === category.name);
+        const oldCategory = oldCourse.gradeCategories!.find(
+          (c) => c.name === category.name
+        );
+
+        if (category.average !== oldCategory?.average) {
+          hasNewData.add(course.key);
+        }
 
         for (const assignment of category.assignments!) {
           if (!assignment.name) continue;
-          const oldAssignment = oldCategory?.assignments?.find(a=>a.name === assignment.name);
+          const oldAssignment = oldCategory?.assignments?.find(
+            (a) => a.name === assignment.name
+          );
 
           if (assignmentHasGrade(assignment)) {
             if (!assignmentHasGrade(oldAssignment)) {
               modifiedAssignments.push(assignment.name);
               // continue courseLoop;
-              hasNewData = true;
+              hasNewData.add(course.key);
             } else if (assignmentHasGrade(assignment)) {
               notModifiedAssignmentsExist = true;
             }
@@ -108,5 +135,5 @@ export default async function fetchAndStore(
     value: JSON.stringify([newData, ...oldData]),
   });
 
-  return hasNewData;
+  return Array.from(hasNewData);
 }

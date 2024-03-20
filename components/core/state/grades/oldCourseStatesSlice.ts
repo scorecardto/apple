@@ -25,13 +25,13 @@ const oldCourseStatesSlice = createSlice({
     setOldCourseState(
       state,
       action: PayloadAction<{
-        key: string;
-        value: CourseState;
+        key?: string;
+        value?: CourseState;
         save: "STATE_AND_STORAGE" | "STATE" | "STORAGE";
       }>
     ) {
       if (action.payload.save !== "STORAGE") {
-        state.record[action.payload.key] = action.payload.value;
+        state.record[action.payload.key!] = action.payload.value!;
       }
 
       if (action.payload.save !== "STATE") {

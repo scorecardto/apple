@@ -27,12 +27,12 @@ import {
   ChangeTableEntry,
 } from "../../../lib/types/ChangeTableEntry";
 import captureCourseState from "../../../lib/captureCourseState";
+import { setChangeTable } from "../../core/state/grades/changeTablesSlice";
 export default function CourseCard(props: {
   course: Course;
   gradingPeriod: number;
   onClick: () => void;
   onHold: () => void;
-  setGradeChanges: (t: ChangeTable) => void;
 }) {
   const colors = useColors();
   const dark = useIsDarkMode();
@@ -90,75 +90,75 @@ export default function CourseCard(props: {
 
   const swipeRef = React.useRef<Swipeable>(null);
 
-  const { oldState, baseGradingPeriod } = useSelector((state: RootState) => {
-    return {
-      oldState: state.oldCourseStates.record[props.course.key],
-      baseGradingPeriod: state.gradeData.record?.gradeCategory,
-    };
-  });
+  const oldState = useSelector(
+    (state: RootState) => state.oldCourseStates.record[props.course.key]
+  );
+  const baseGradingPeriod = useSelector(
+    (state: RootState) => state.gradeData.record?.gradeCategory
+  );
 
   const [hasNewGrades, setHasNewGrades] = useState(false);
 
   useEffect(() => {
-    const newState = captureCourseState(props.course);
+    let changes: ChangeTable = {changed: false};
 
-    const newGrades: ChangeTableEntry[] =
-      newState?.categories
-        ?.map?.((newCategory): ChangeTableEntry[] => {
-          const oldCategory = oldState?.categories?.find?.(
-            (c) => c.name === newCategory.name
-          );
+    if (oldState && props.gradingPeriod === baseGradingPeriod) {
+      const newState = captureCourseState(props.course);
 
-          const newGrades =
-            newCategory?.assignments?.filter?.(
-              (g) =>
-                !oldCategory?.assignments.find(
-                  (og) => og.name === g.name && og.grade === g.grade
-                ) && g.grade !== ""
-            ) || [];
+      const newGrades: ChangeTableEntry[] = newState.categories
+          .map((newCategory): ChangeTableEntry[] => {
+            const oldCategory = oldState.categories.find(
+                (c) => c.name === newCategory.name
+            );
 
-          return newGrades.map((g) => ({
-            assignmentName: g.name,
-            primaryData: g.grade,
-            secondaryData: newCategory.name,
-          }));
-        })
-        ?.flat?.() || [];
+            const newGrades = newCategory.assignments.filter(
+                (g) =>
+                    !oldCategory?.assignments.find(
+                        (og) => og.name === g.name && og.grade === g.grade
+                    ) && g.grade !== ""
+            );
 
-    const removedGrades = oldState?.categories?.map?.(
-      (oldCategory): ChangeTableEntry[] => {
-        const newCategory = newState?.categories?.find?.(
-          (c) => c.name === oldCategory.name
-        );
+            return newGrades.map((g) => ({
+              assignmentName: g.name,
+              primaryData: g.grade,
+              secondaryData: newCategory.name,
+            }));
+          })
+          .flat();
 
-        const removedGrades =
-          oldCategory?.assignments?.filter?.(
-            (g) => !newCategory?.assignments?.find?.((og) => og.name === g.name)
-          ) || [];
+      const removedGrades = oldState?.categories?.map?.(
+          (oldCategory): ChangeTableEntry[] => {
+            const newCategory = newState?.categories?.find?.(
+                (c) => c.name === oldCategory.name
+            );
 
-        return removedGrades.map((g) => ({
-          assignmentName: g.name,
-          primaryData: "Removed",
-          secondaryData: oldCategory.name,
-        }));
-      }
-    );
+            const removedGrades =
+                oldCategory?.assignments?.filter?.(
+                    (g) => !newCategory?.assignments?.find?.((og) => og.name === g.name)
+                ) || [];
 
-    const oldAverage = oldState?.average;
-    const newAverage = newState?.average;
+            return removedGrades.map((g) => ({
+              assignmentName: g.name,
+              primaryData: "Removed",
+              secondaryData: oldCategory.name,
+            }));
+          }
+      );
 
-    const changes = {
-      changed:
-        props.gradingPeriod === baseGradingPeriod &&
-        (oldAverage !== newAverage ||
-          newGrades.length > 0 ||
-          removedGrades.find((l) => l.length > 0) != undefined),
-      oldAverage,
-      newAverage,
-      newGrades,
-      removedGrades,
-    };
-    props.setGradeChanges(changes);
+      const oldAverage = oldState?.average;
+      const newAverage = newState?.average;
+
+      changes = {
+        changed: (oldAverage !== newAverage ||
+            newGrades.length > 0 ||
+            removedGrades.find((l) => l.length > 0) != undefined),
+        oldAverage,
+        newAverage,
+        newGrades,
+        removedGrades,
+      };
+    }
+    dispatch(setChangeTable({key: props.course.key, table: changes}));
 
     setHasNewGrades(changes.changed);
   }, [oldState, props.course]);

@@ -43,7 +43,6 @@ import {
   setupForegroundNotifications,
   setupBackgroundNotifications,
   requestPermissions,
-  setupBackgroundFetch,
 } from "./lib/backgroundNotifications";
 import StartScreen from "./components/screens/welcome/StartScreen";
 import NotificationsScreen from "./components/screens/welcome/NotificationsScreen";
@@ -52,7 +51,6 @@ import PrivacyScreen from "./components/screens/welcome/PrivacyScreen";
 
 SplashScreen.preventAutoHideAsync();
 setupBackgroundNotifications();
-setupBackgroundFetch();
 
 const Stack = createNativeStackNavigator();
 
@@ -98,10 +96,10 @@ export default function App(props: { resetKey: string }) {
   }, [schoolName, gradeLabel]);
 
   useEffect(() => {
-    if (appReady) {
-      return setupForegroundNotifications();
+    if (navigationRef.current) {
+      return setupForegroundNotifications(navigationRef.current);
     }
-  }, [appReady]);
+  }, [navigationRef.current]);
   return (
     <MobileDataProvider>
       <AppInitializer
@@ -176,11 +174,11 @@ export default function App(props: { resetKey: string }) {
                       }}
                     />
                     <Stack.Screen
-                        name="privacyPolicy"
-                        component={PrivacyScreen}
-                        options={{
-                          headerShown: false,
-                        }}
+                      name="privacyPolicy"
+                      component={PrivacyScreen}
+                      options={{
+                        headerShown: false,
+                      }}
                     />
                     <Stack.Screen
                       name="connectAccount"
