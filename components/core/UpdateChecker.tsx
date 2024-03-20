@@ -28,7 +28,7 @@ export default function UpdateChecker() {
 
             const latestVersion = parseVersion(versions[0].versionDisplay);
             const version = parseVersion(Application.nativeApplicationVersion!);
-            const storedVersion = await Storage.getItem({key: "version"}) ?? Application.nativeApplicationVersion!;
+            const storedVersion = await Storage.getItem({key: "version"});
 
             if (version.arr[0] < 1) {
                 console.log("Development mode detected, no update checks");
