@@ -48,6 +48,7 @@ import StartScreen from "./components/screens/welcome/StartScreen";
 import NotificationsScreen from "./components/screens/welcome/NotificationsScreen";
 import * as Notifications from "expo-notifications";
 import PrivacyScreen from "./components/screens/welcome/PrivacyScreen";
+import UpdateChecker from "./components/core/UpdateChecker";
 
 SplashScreen.preventAutoHideAsync();
 setupBackgroundNotifications();
@@ -286,6 +287,7 @@ export default function App(props: { resetKey: string }) {
                     />
                   </Stack.Navigator>
                   <ToastConfig />
+                  <UpdateChecker />
                 </NavigationContainer>
               </BottomSheetProvider>
             </GestureHandlerRootView>
