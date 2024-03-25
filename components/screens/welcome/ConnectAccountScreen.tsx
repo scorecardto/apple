@@ -85,6 +85,8 @@ const ConnectAccountScreen = (props: {
 
       reportCard
         .then(async (data) => {
+          console.log("done fetching content");
+
           dispatch(loginSlice.setDistrict(district));
           dispatch(loginSlice.setUsername(username));
           dispatch(loginSlice.setPassword(password));

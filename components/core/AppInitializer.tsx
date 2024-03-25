@@ -77,6 +77,8 @@ export default function AppInitializer(props: {
 
       const [_, nextScreen] = await Promise.all([fontsAsync, nextScreenAsync]);
 
+      console.log(nextScreen);
+
       props.setNextScreen(nextScreen);
 
       props.setAppReady(true);

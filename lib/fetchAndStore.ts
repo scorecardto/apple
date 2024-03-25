@@ -12,7 +12,10 @@ import {
   setSessionId,
 } from "../components/core/state/user/loginSlice";
 import { setGradeRecord } from "../components/core/state/grades/gradeDataSlice";
-import {setOldCourseState, setOldCourseStates} from "../components/core/state/grades/oldCourseStatesSlice";
+import {
+  setOldCourseState,
+  setOldCourseStates,
+} from "../components/core/state/grades/oldCourseStatesSlice";
 import { setGradeCategory } from "../components/core/state/grades/gradeCategorySlice";
 import { updateNotifs } from "./backgroundNotifications";
 import { useEffect } from "react";
@@ -22,6 +25,7 @@ export default async function fetchAndStore(
   dispatch: AppDispatch,
   updateCourseStates: boolean
 ) {
+  console.log("running fetch and store...");
   const gradeCategory =
     Math.max(
       ...data.courses.map((course) => course.grades.filter((g) => g).length)
@@ -30,14 +34,17 @@ export default async function fetchAndStore(
   dispatch(setReferer(data.referer));
   dispatch(setSessionId(data.sessionId));
 
+  console.log("fetching old data...");
   const oldData: GradebookRecord[] = JSON.parse(
     (await Storage.getItem({ key: "records" })) ?? "[]"
   );
 
-  if (gradeCategory !== oldData[0].gradeCategory) {
-    dispatch(setOldCourseStates({}))
-    dispatch(setOldCourseState({save: "STORAGE"}))
+  if (gradeCategory !== oldData[0]?.gradeCategory) {
+    dispatch(setOldCourseStates({}));
+    dispatch(setOldCourseState({ save: "STORAGE" }));
   }
+
+  console.log("running new data calculation...");
 
   const newData: GradebookRecord = {
     courses: data.courses.map((c) => {
@@ -59,6 +66,8 @@ export default async function fetchAndStore(
     date: Date.now(),
     gradeCategoryNames: data.gradeCategoryNames,
   };
+
+  console.log("setting records state...");
 
   dispatch(setGradeCategory(gradeCategory));
   dispatch(setGradeRecord(newData));
@@ -131,6 +140,8 @@ export default async function fetchAndStore(
       }
     }
   }
+
+  console.log("setting records storage...");
 
   await Storage.setItem({
     key: "records",
