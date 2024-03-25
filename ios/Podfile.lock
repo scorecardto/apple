@@ -738,6 +738,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSMS (11.4.0):
     - ExpoModulesCore
+  - ExpoWidgets (0.5.55):
+    - ExpoModulesCore
   - EXSplashScreen (0.20.5):
     - ExpoModulesCore
     - RCT-Folly (= 2021.07.22.00)
@@ -1487,6 +1489,7 @@ DEPENDENCIES:
   - ExpoSecureStore (from `../node_modules/expo-secure-store/ios`)
   - ExpoSharing (from `../node_modules/expo-sharing/ios`)
   - ExpoSMS (from `../node_modules/expo-sms/ios`)
+  - "ExpoWidgets (from `../node_modules/@bittingz/expo-widgets/ios`)"
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - EXTaskManager (from `../node_modules/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
@@ -1632,6 +1635,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-sharing/ios"
   ExpoSMS:
     :path: "../node_modules/expo-sms/ios"
+  ExpoWidgets:
+    :path: "../node_modules/@bittingz/expo-widgets/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
   EXTaskManager:
@@ -1769,6 +1774,7 @@ SPEC CHECKSUMS:
   ExpoSecureStore: c84ae37d1c36f38524d289c67c3a2e3fc56f1108
   ExpoSharing: 825b2b3fc919a2656f75def0069f584bbd6e359a
   ExpoSMS: c8079b3018ae5206b3f1f6f445fd4eee2a19a335
+  ExpoWidgets: c8519e57903f1375cd09fe7fa4241f3244940afa
   EXSplashScreen: 2c80621e4bc952f5bea328304c2436f5fe21c2a0
   EXTaskManager: f1730c315eb6fe457a3a2ee4ed899a51d717f302
   EXUpdatesInterface: 82ed48d417cdcd376c12ca1c2ce390d35500bed6
