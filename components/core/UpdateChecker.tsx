@@ -4,7 +4,6 @@ import * as Application from "expo-application";
 import * as Device from "expo-device";
 import Storage from "expo-storage";
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 
 function parseVersion(version: string) {
     const arr = version
@@ -43,11 +42,6 @@ export default function UpdateChecker() {
             const latestVersion = parseVersion(versions[0].versionDisplay);
             const version = parseVersion(Application.nativeApplicationVersion!);
             const storedVersion = await Storage.getItem({key: "version"});
-
-            if (version.arr[0] < 1) {
-                console.log("Development mode detected, no update checks");
-                return;
-            }
 
             if (version.arr.find((v, i) => v < latestVersion.arr[i]) !== undefined) {
                 console.log("Update available, release notes:\n\n"+await getReleaseNotes(latestVersion.str));
